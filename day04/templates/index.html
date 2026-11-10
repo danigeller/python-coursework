@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Opsin Sequence Comparison Tool</title>
+    <style>
+        body {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 20px;
+            color: #243044;
+            font-family: Arial, sans-serif;
+        }
+        h1 { color: #174b67; }
+        form, .results {
+            margin-top: 24px;
+            padding: 20px;
+            border: 1px solid #d5dee7;
+            border-radius: 8px;
+        }
+        button, .download {
+            display: inline-block;
+            margin-top: 16px;
+            padding: 10px 16px;
+            border: 0;
+            border-radius: 5px;
+            background: #176b87;
+            color: white;
+            font-size: 1rem;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .error {
+            margin-top: 20px;
+            padding: 12px;
+            border: 1px solid #bd3b3b;
+            border-radius: 5px;
+            background: #fff1f1;
+            color: #8b2020;
+        }
+        table {
+            width: 100%;
+            margin-top: 16px;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #d5dee7;
+            text-align: left;
+        }
+        th { background: #edf4f7; }
+    </style>
+</head>
+<body>
+    <h1>Opsin Sequence Comparison Tool</h1>
+    <p>Upload a FASTA file with at least two protein sequences to compare them.</p>
+
+    <form method="post" enctype="multipart/form-data">
+        <label for="fasta_file">FASTA file:</label>
+        <input id="fasta_file" name="fasta_file" type="file" accept=".fasta,.fa,.fas,.txt" required>
+        <br>
+        <button type="submit">Compare Sequences</button>
+    </form>
+
+    {% if error %}
+        <p class="error" role="alert">{{ error }}</p>
+    {% endif %}
+
+    {% if results %}
+        <section class="results">
+            <h2>Comparison Results</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Protein 1</th>
+                        <th>Protein 2</th>
+                        <th>Identity (%)</th>
+                        <th>Difference (%)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in results %}
+                        <tr>
+                            <td>{{ row["Protein 1"] }}</td>
+                            <td>{{ row["Protein 2"] }}</td>
+                            <td>{{ "%.2f"|format(row["Identity (%)"]) }}</td>
+                            <td>{{ "%.2f"|format(row["Difference (%)"]) }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <a class="download"
+               href="data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,{{ excel_data }}"
+               download="sequence_comparison_results.xlsx">
+                Download Excel
+            </a>
+        </section>
+    {% endif %}
+</body>
+</html>
